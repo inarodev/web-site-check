@@ -1,0 +1,3 @@
+node_modules/
+.web-site-check/
+*.log
