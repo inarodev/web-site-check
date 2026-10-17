@@ -4,6 +4,9 @@
   "type": "module",
   "version": "0.2.0",
   "description": "web-site-check スキルが使う検査スクリプト",
+  "engines": {
+    "node": ">=20.18.1"
+  },
   "scripts": {
     "check": "tsx check.ts",
     "typecheck": "tsc --noEmit"

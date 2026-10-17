@@ -36,7 +36,7 @@ argument-hint: "[検査するURL（省略可。例: http://localhost:3000）]"
 
 次の3つを、ユーザーに聞かずに調べる。
 
-1. **導入状況**：`node <このスキルのディレクトリ>/scripts/setup.mjs --check --profile full` を実行する。依存パッケージなしで動く。出力は `{"deps":true,"lighthouse":true,"browser":true,"webkit":false,"firefox":false,"needs":["webkit","firefox"]}` の形。`needs` の `npm-packages` はcheerio・Playwright・Lighthouseなど、`chromium` はブラウザ本体、`webkit`・`firefox` はフルでだけ使うブラウザ
+1. **導入状況**：`node <このスキルのディレクトリ>/scripts/setup.mjs --check --profile full` を実行する。依存パッケージなしで動く。出力は `{"deps":true,"lighthouse":true,"browser":true,"webkit":false,"firefox":false,"node":"22.11.0","nodeOk":true,"needs":["webkit","firefox"]}` の形。`nodeOk` が false なら、Node.js 20.18.1以上が必要なことを伝えて止まる（質問はしない）。`needs` の `npm-packages` はcheerio・Playwright・Lighthouseなど、`chromium` はブラウザ本体、`webkit`・`firefox` はフルでだけ使うブラウザ
 2. **引数**：`/web-site-check http://localhost:3000` のようにURLが渡されていれば、そのURLを使い、URLの質問を省く
 3. **環境と案件種別**：`env/detect.md` に従って、構成（静的HTML／Next.js／Astro／WordPressテーマ）、起動方法、確認するURL、案件種別を判定する
 
@@ -82,7 +82,7 @@ AskUserQuestion が使えないとき（無人実行など）：
 | ブラウザは入れない | `node <スキルのパス>/scripts/setup.mjs --install --skip-browser`。以後 `--no-browser` を付ける |
 | 中止 | 何もせず終了する |
 
-終了コードが2（ブラウザの導入に失敗）なら、続行する。Chromiumがなければ `--no-browser` を付け、導入に失敗したことをレポートに書く（WebKit・Firefox がなければ、その検査は自動で省かれる）。1（npmパッケージの導入に失敗）なら、エラー内容を伝えて止まる。
+終了コードが2（ブラウザの導入に失敗）なら、続行する。Chromiumがなければ `--no-browser` を付け、導入に失敗したことをレポートに書く（WebKit・Firefox がなければ、その検査は自動で省かれる）。1（npmパッケージの導入に失敗）・3（Node.jsが古い）なら、エラー内容を伝えて止まる。
 
 **サイトの起動**：すでに指定のURLが応答するなら起動し直さない。応答しなければ、判定した起動方法でバックグラウンドで起動し、URLが応答するまで待つ（最大60秒）。ビルドが必要な構成（Next.js・Astroなど）は先にビルドする。検査が終わったら、自分で起動したプロセスは止める。起動はユーザーが検査を頼んだ時点で了承されているため、個別に確認しない。
 

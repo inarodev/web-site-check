@@ -40,7 +40,7 @@ Playwright・Lighthouse などの手動インストールは不要です。初�
 - npmパッケージ：スキルの `scripts/` フォルダの中
 - ブラウザ（Chromium、フルではWebKit・Firefoxも）：Playwrightの既定の場所
 
-検査するプロジェクトには何も追加されません。Node.js 18以上が必要です。
+検査するプロジェクトには何も追加されません。Node.js 20.18.1以上が必要です。
 
 ## 使い方
 

@@ -1,7 +1,7 @@
 /**
  * web-site-check: 検査スクリプト（入口）
  *
- * ローカルで起動しているサイトを検査し、findings.json と report.md（下書き）を出力する。
+ * ローカルで起動しているサイトを検査し、findings.json と report.draft.md（下書き）を出力する。
  *
  * 使い方:
  *   npx tsx check.ts --base http://localhost:3000 [--profile quick|standard|full]
@@ -170,7 +170,7 @@ async function main(): Promise<void> {
   console.log(`対象: ${opts.base.origin}（プロファイル: ${opts.profile}）`);
 
   // 前回の証跡を消す（古いスクリーンショットが混ざらないように）
-  for (const d of ['screenshots', 'print', 'aria']) await rm(path.join(opts.out, d), { recursive: true, force: true });
+  for (const d of ['screenshots', 'print', 'aria', 'lighthouse']) await rm(path.join(opts.out, d), { recursive: true, force: true });
 
   const pages = await discoverPages(opts);
   console.log(`検査ページ: ${pages.length}件`);

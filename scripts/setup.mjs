@@ -14,7 +14,9 @@
  *   Chromium（約150MB）                                                  … Playwrightの既定の場所に入る
  *   WebKit・Firefox（各約100MB。フルのときだけ）                         … 同上
  *
- * 終了コード: 0 = 成功 / 1 = npmパッケージの導入に失敗 / 2 = ブラウザの導入に失敗（検査は続行できる）
+ * 必要なNode.js: 20.18.1以上（cheerio の要件）。--check の出力の nodeOk が false なら導入しない
+ *
+ * 終了コード: 0 = 成功 / 1 = npmパッケージの導入に失敗 / 2 = ブラウザの導入に失敗（検査は続行できる） / 3 = Node.jsが古い
  */
 import { existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -28,6 +30,10 @@ const isWin = process.platform === 'win32';
 const profileIdx = args.indexOf('--profile');
 const profile = profileIdx >= 0 ? args[profileIdx + 1] : 'quick';
 const wantEngines = profile === 'full' && !args.includes('--chromium-only');
+
+/** cheerio 1.x が Node.js 20.18.1 以上を要求する */
+const [nodeMajor, nodeMinor, nodePatch] = process.versions.node.split('.').map(Number);
+const nodeOk = nodeMajor > 20 || (nodeMajor === 20 && (nodeMinor > 18 || (nodeMinor === 18 && nodePatch >= 1)));
 
 /** 検査に必須のパッケージ（これが無いと check.ts を実行できない） */
 function requiredInstalled() {
@@ -57,6 +63,8 @@ function status() {
     browser: deps && engineInstalled('chromium'),
     webkit: deps && engineInstalled('webkit'),
     firefox: deps && engineInstalled('firefox'),
+    node: process.versions.node,
+    nodeOk,
     needs: [],
   };
   if (!deps || !st.lighthouse) st.needs.push('npm-packages');
@@ -77,12 +85,16 @@ if (args.includes('--check')) {
 }
 
 if (args.includes('--install')) {
+  if (!nodeOk) {
+    console.error(`Node.js ${process.versions.node} では動きません。20.18.1以上にしてください。`);
+    process.exit(3);
+  }
   const before = status();
 
   if (before.needs.includes('npm-packages')) {
     console.log('npmパッケージを導入します（cheerio, html-validate, playwright, lighthouse など）...');
     if (!run('npm', ['install', '--no-audit', '--no-fund'])) {
-      console.error('npmパッケージの導入に失敗しました。ネットワークとNode.jsのバージョン（18以上）を確認してください。');
+      console.error('npmパッケージの導入に失敗しました。ネットワークとNode.jsのバージョン（20.18.1以上）を確認してください。');
       process.exit(1);
     }
   }
